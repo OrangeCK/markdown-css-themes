@@ -5,6 +5,7 @@
      border-radius: 10px;
  }
 </style>
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link id="linkstyle" rel='stylesheet' href='markdown.css'/>
 <div id="preview-box">
     <strong>Preview another...</strong>
@@ -21,6 +22,9 @@
         <option value="markdown8.css"    >markdown8</option>
         <option value="markdown9.css"    >markdown9</option>
         <option value="markdown10.css"   >markdown10</option>
+        <option value="markdown11.css"   >markdown11</option>
+        <option value="markdown12.css"   >markdown12</option>
+        <option value="markdown13.css"   >markdown13</option>
         <option value="avenir-white.css" >avenir-white</option>
         <option value="foghorn.css"      >foghorn</option>
         <option value="screen.css"       >screen</option>
@@ -36,109 +40,231 @@
  };
 </script>
 
-<h1>Markdown css themes</h1>
-
-<hr />
-
-<h1>A First Level Header</h1>
-
-<h2>A Second Level Header</h2>
-
-<h3>A Third Level Header</h3>
-
-<h4>A Fourth Level Header</h4>
-
-<h5>A Fifth Level Header</h5>
-
-<h6>A Sixed Level Header</h6>
-
-<p>Now is the time for all good men to come to
-    the aid of their country. This is just a
-    regular paragraph.</p>
-
-<p>The quick brown fox jumped over the lazy
-    dog&rsquo;s back.</p>
-
-<hr />
-
-<h3>Header 3</h3>
-
-<blockquote><p>This is a blockquote with two paragraphs. Lorem ipsum dolor sit amet,
-    consectetuer adipiscing elit. Aliquam hendrerit mi posuere lectus.
-    Vestibulum enim wisi, viverra nec, fringilla in, laoreet vitae, risus.</p>
-
-    <p>Donec sit amet nisl. Aliquam semper ipsum sit amet velit. Suspendisse
-        id sem consectetuer libero luctus adipiscing.</p>
-
-    <h2>This is an H2 in a blockquote</h2>
-
-    <p>This is the first level of quoting.</p>
-
-    <blockquote><p>This is nested blockquote.</p></blockquote>
-
-    <p>Back to the first level.</p></blockquote>
-
-<p>Some of these words <em>are emphasized</em>.
-    Some of these words <em>are emphasized also</em>.</p>
-
-<p>Use two asterisks for <strong>strong emphasis</strong>.
-    Or, if you prefer, <strong>use two underscores instead</strong>.</p>
-
+<p>[TOC]</p>
+<h1>log4j2的配置，不同级别日志保存在不同文件夹（基于Springboot)</h1>
+<h2>1.前言汇总</h2>
+<blockquote>
 <ul>
-    <li>Candy.</li>
-    <li>Gum.</li>
-    <li>Booze.</li>
-    <li>Red</li>
-    <li>Green</li>
-    <li><p>Blue</p></li>
-    <li><p>A list item.</p></li>
+<li>目的是想按照按照规定的格式打印在控制台，以及以文件的形式保存下来，并且按照日志的级别，保存为不同的log文件.</li>
+<li>首先你得搭建一个简单的springboot项目，这个就直接在网上查，例子数不胜数</li>
+<li>然后在pom.xml文件中添加依赖：</li>
 </ul>
-
-
-<p>With multiple paragraphs.</p>
-
-<ul>
-    <li><p>Another item in the list.</p></li>
-    <li><p>This is a list item with two paragraphs. Lorem ipsum dolor
-        sit amet, consectetuer adipiscing elit. Aliquam hendrerit
-        mi posuere lectus.</p></li>
-</ul>
-
-
-<p>Vestibulum enim wisi, viverra nec, fringilla in, laoreet
-    vitae, risus. Donec sit amet nisl. Aliquam semper ipsum
-    sit amet velit.*   Suspendisse id sem consectetuer libero luctus adipiscing.</p>
-
-<ul>
-    <li>This is a list item with two paragraphs.</li>
-</ul>
-
-
-<p>This is the second paragraph in the list item. You&rsquo;re
-    only required to indent the first line. Lorem ipsum dolor
-    sit amet, consectetuer adipiscing elit.</p>
-
-<ul>
-    <li><p>Another item in the same list.</p></li>
-    <li><p>A list item with a bit of <code>code</code> inline.</p></li>
-    <li><p>A list item with a blockquote:</p>
-
-        <blockquote><p>This is a blockquote
-            inside a list item.</p></blockquote></li>
-</ul>
-
-
-<p>Here is an example of a pre code block</p>
-
-<pre><code>tell application "Foo"
-beep
-end tell
+</blockquote>
+<pre><code>&lt;dependency&gt;
+    &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+    &lt;artifactId&gt;spring-boot-starter-web&lt;/artifactId&gt;
+    &lt;exclusions&gt;
+        &lt;exclusion&gt;
+            &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+            &lt;artifactId&gt;spring-boot-starter-logging&lt;/artifactId&gt;
+        &lt;/exclusion&gt;
+    &lt;/exclusions&gt;
+&lt;/dependency&gt;
+&lt;!--添加log4j的依赖--&gt;
+&lt;dependency&gt;
+    &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+    &lt;artifactId&gt;spring-boot-starter-log4j2&lt;/artifactId&gt;
+&lt;/dependency&gt;
 </code></pre>
 
-<p>This is an <a href="http://example.com/">example link</a>.</p>
+<blockquote>
+<ul>
+<li>至于为什么要加上exclusions那一段标签，原因是因为springboot有个默认的日志，叫logback,
+其实这个日志也是比较好用的，可以看我的下篇文章阐述；所以要把他排除，不然也许会报出错误。</li>
+<li>然后是在resources目录下加入日志的配置文件，至于名字,在log4j2里，配置文件检测的过程如下：</li>
+</ul>
+<blockquote>
+<ol>
+<li>log4j会检测名为&quot;log4j.configurationFile&quot;的系统属性值，如果这个值被设置了，则会尝试通过ConfigurationFactory来加载这个值对应的文件。</li>
+<li>否则它会尝试查找log4j2-test.properties这个文件。</li>
+<li>否则它会尝试查找文件log4j2-test.yaml 和 log4j2-test.yml。</li>
+<li>否则它会尝试查找文件log4j2-test.json 和 log4j2-test.jsn。</li>
+<li>否则查找文件log4j2-test.xml。</li>
+<li>否则查找文件log4j2.properties。</li>
+<li>否则查找文件log4j2.yaml 和 log4j2.yml。</li>
+<li>否则查找文件log4j2.json 和 log4j2.jsn。</li>
+<li>否则查找文件log4j2.xml。</li>
+</ol>
+</blockquote>
+<ul>
+<li>我直接取的是log4j2.xml</li>
+</ul>
+</blockquote>
+<h2>log4j2.xml的实际配置</h2>
+<blockquote>
+<ul>
+<li>这里我直接po出整个log4j2.xml吧，详细的解释我就直接写在配置文件中的注释了吧</li>
+</ul>
+</blockquote>
+<pre><code>&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;
+&lt;Configuration packages=&quot;com.example.baseframe.myspringboot.config&quot;&gt;
+&lt;Properties&gt;
+    &lt;property name=&quot;Log_Home&quot;&gt;d:/logs/myspringboot/&lt;/property&gt;
+&lt;/Properties&gt;
+&lt;appenders&gt;
+    &lt;!--这个输出控制台的配置--&gt;
+    &lt;Console name=&quot;Console&quot; target=&quot;SYSTEM_OUT&quot;&gt;
+        &lt;!--控制台只输出level及以上级别的信息（onMatch），其他的直接拒绝（onMismatch）,ACCEPT(接受其及以上)，DENY(拒绝以下)，NEUTRAL(中立，由下一个ThresholdFilter处理)--&gt;
+        &lt;ThresholdFilter level=&quot;TRACE&quot; onMatch=&quot;ACCEPT&quot; onMismatch=&quot;DENY&quot; /&gt;
+        &lt;!--输出日志格式--&gt;
+        &lt;PatternLayout pattern=&quot;%d{yyyy-MM-dd HH:mm:ss}| %-5level|%ip|%thread| %logger{50}| %msg%n&quot; /&gt;
+    &lt;/Console&gt;
+    &lt;!--这个会只打印出所有的DEBUG信息，每次大小超过size，则这size大小的日志会自动存入按年份-月份建立的文件夹下面并进行压缩，作为存档--&gt;
+    &lt;RollingFile name=&quot;RollingFile_Debug&quot; fileName=&quot;${Log_Home}/debug/debug.log&quot; filePattern=&quot;${Log_Home}$${date:yyyy-MM}/app-%d{yyyyMMddHHmmssSSS}.log.gz&quot;&gt;
+        &lt;PatternLayout pattern=&quot;%d{yyyy-MM-dd HH:mm:ss}| %-5level|%ip|%thread| %logger{50}| %msg%n&quot; /&gt;
+        &lt;!-- 日志文件大小 --&gt;
+        &lt;SizeBasedTriggeringPolicy size=&quot;20MB&quot; /&gt;
+        &lt;!-- 最多保留文件数 --&gt;
+        &lt;DefaultRolloverStrategy max=&quot;20&quot;/&gt;
+        &lt;!--至于为什么只会打印出DEBUG级别的日志，就是因为下面的Filters标签,
+            onMatch=&quot;ACCEPT&quot; 表示匹配该级别及以上
+            onMatch=&quot;DENY&quot; 表示不匹配该级别及以上
+            onMatch=&quot;NEUTRAL&quot; 表示该级别及以上的，由下一个filter处理，如果当前是最后一个，则表示匹配该级别及以上
+            onMismatch=&quot;ACCEPT&quot; 表示匹配该级别以下
+            onMismatch=&quot;NEUTRAL&quot; 表示该级别及以下的，由下一个filter处理，如果当前是最后一个，则不匹配该级别以下的--&gt;
+        &lt;Filters&gt;
+            &lt;ThresholdFilter level=&quot;INFO&quot; onMatch=&quot;DENY&quot; onMismatch=&quot;NEUTRAL&quot;/&gt;
+            &lt;ThresholdFilter level=&quot;DEBUG&quot; onMatch=&quot;ACCEPT&quot; onMismatch=&quot;DENY&quot;/&gt;
+        &lt;/Filters&gt;
+    &lt;/RollingFile&gt;
+    &lt;!--这个会只打印出所有的INFO信息，每次大小超过size，则这size大小的日志会自动存入按年份-月份建立的文件夹下面并进行压缩，作为存档--&gt;
+    &lt;RollingFile name=&quot;RollingFile_Info&quot; fileName=&quot;${Log_Home}/info/info.log&quot; filePattern=&quot;${Log_Home}$${date:yyyy-MM}/app-%d{yyyyMMddHHmmssSSS}.log.gz&quot;&gt;
+        &lt;PatternLayout pattern=&quot;%d{yyyy-MM-dd HH:mm:ss}| %-5level|%ip|%thread| %logger{50}| %msg%n&quot; /&gt;
+        &lt;SizeBasedTriggeringPolicy size=&quot;20MB&quot; /&gt;
+        &lt;DefaultRolloverStrategy max=&quot;20&quot;/&gt;
+        &lt;Filters&gt;
+            &lt;ThresholdFilter level=&quot;WARN&quot; onMatch=&quot;DENY&quot; onMismatch=&quot;NEUTRAL&quot;/&gt;
+            &lt;ThresholdFilter level=&quot;INFO&quot; onMatch=&quot;ACCEPT&quot; onMismatch=&quot;DENY&quot;/&gt;
+        &lt;/Filters&gt;
+    &lt;/RollingFile&gt;
+    &lt;!--这个会只打印出所有的WARN信息，每次大小超过size，则这size大小的日志会自动存入按年份-月份建立的文件夹下面并进行压缩，作为存档--&gt;
+    &lt;RollingFile name=&quot;RollingFile_Warn&quot; fileName=&quot;${Log_Home}/warn/warn.log&quot; filePattern=&quot;${Log_Home}$${date:yyyy-MM}/app-%d{yyyyMMddHHmmssSSS}.log.gz&quot;&gt;
+        &lt;PatternLayout pattern=&quot;%d{yyyy-MM-dd HH:mm:ss}| %-5level|%ip|%thread| %logger{50}| %msg%n&quot; /&gt;
+        &lt;SizeBasedTriggeringPolicy size=&quot;20MB&quot; /&gt;
+        &lt;DefaultRolloverStrategy max=&quot;20&quot;/&gt;
+        &lt;Filters&gt;
+            &lt;ThresholdFilter level=&quot;ERROR&quot; onMatch=&quot;DENY&quot; onMismatch=&quot;NEUTRAL&quot;/&gt;
+            &lt;ThresholdFilter level=&quot;WARN&quot; onMatch=&quot;ACCEPT&quot; onMismatch=&quot;DENY&quot;/&gt;
+        &lt;/Filters&gt;
+    &lt;/RollingFile&gt;
+    &lt;!--这个会只打印出所有的ERROR信息，每次大小超过size，则这size大小的日志会自动存入按年份-月份建立的文件夹下面并进行压缩，作为存档--&gt;
+    &lt;RollingFile name=&quot;RollingFile_Error&quot; fileName=&quot;${Log_Home}/error/error.log&quot; filePattern=&quot;${Log_Home}$${date:yyyy-MM}/app-%d{yyyyMMddHHmmssSSS}.log.gz&quot;&gt;
+        &lt;PatternLayout pattern=&quot;%d{yyyy-MM-dd HH:mm:ss}| %-5level|%ip|%thread| %logger{50}| %msg%n&quot; /&gt;
+        &lt;SizeBasedTriggeringPolicy size=&quot;20MB&quot; /&gt;
+        &lt;DefaultRolloverStrategy max=&quot;20&quot;/&gt;
+        &lt;Filters&gt;
+            &lt;ThresholdFilter level=&quot;ERROR&quot; onMatch=&quot;ACCEPT&quot; onMismatch=&quot;DENY&quot;/&gt;
+        &lt;/Filters&gt;
+    &lt;/RollingFile&gt;
+&lt;/appenders&gt;
 
-<p>I get 10 times more traffic from <a href="http://google.com/" title="Google">Google</a> than from
-    <a href="http://search.yahoo.com/" title="Yahoo Search">Yahoo</a> or <a href="http://search.msn.com/" title="MSN Search">MSN</a>.</p>
+&lt;Loggers&gt;
+    &lt;!--然后定义logger，只有定义了logger并引入的appender，
+        appender才会生效，additivity默认是true,表示将此logger的打印信息向上级传递，
+        在这儿root就是他的上级，root的设置的打印级别是debug,logger级别没有低于他，
+        所以root里面也会打印一遍--&gt;
+    &lt;logger name=&quot;com.example.baseframe.myspringboot&quot; level=&quot;DEBUG&quot; additivity=&quot;true&quot;&gt;
+        &lt;AppenderRef ref=&quot;RollingFile_Debug&quot; /&gt;
+        &lt;AppenderRef ref=&quot;RollingFile_Info&quot; /&gt;
+        &lt;AppenderRef ref=&quot;RollingFile_Warn&quot; /&gt;
+        &lt;AppenderRef ref=&quot;RollingFile_Error&quot; /&gt;
+    &lt;/logger&gt;
+    &lt;!--建立一个默认的root的logger--&gt;
+    &lt;root level=&quot;DEBUG&quot;&gt;
+        &lt;AppenderRef ref=&quot;Console&quot; /&gt;
+    &lt;/root&gt;
+&lt;/Loggers&gt;
+&lt;/Configuration&gt;
+</code></pre>
 
-<p>I start my morning with a cup of coffee and
-    <a href="http://www.nytimes.com/">The New York Times</a>.</p>
+<blockquote>
+<ul>
+<li>在java代码中怎么使用</li>
+</ul>
+</blockquote>
+<pre><code>public class Log4j2DemoApplication implements ApplicationRunner {
+    private static final Logger logger = LogManager.getLogger(Log4j2DemoApplication.class);
+
+    public static void main(String[] args) {
+        SpringApplication.run(Log4j2DemoApplication.class, args);
+    }
+
+    @Override
+    public void run(ApplicationArguments applicationArguments) throws Exception {
+        logger.debug(&quot;Debugging log&quot;);
+        logger.info(&quot;Info log&quot;);
+        logger.warn(&quot;Hey, This is a warning!&quot;);
+        logger.error(&quot;Oops! We have an Error. OK&quot;);
+        logger.fatal(&quot;Damn! Fatal error. Please fix me.&quot;);
+    }
+}
+</code></pre>
+<h2>一级标题</h2>
+<ol>
+<li>chenshi</li>
+<li>ssd</li>
+<li>ddd</li>
+<li>ddd</li>
+<li>sss</li>
+<li>ss </li>
+</ol>
+<h2>二级目录</h2>
+<blockquote>
+<ul>
+<li>这是什么1</li>
+<li>这是什么而</li>
+<li>这还是什么三</li>
+<li>吃饭</li>
+</ul>
+<blockquote>
+<ul>
+<li><strong><em>斜粗体</em></strong> </li>
+</ul>
+</blockquote>
+</blockquote>
+<h2>名字</h2>
+<h2>~~删除~~</h2>
+<hr />
+<h2><img src="http://2019-2-16-ck.oss-cn-beijing.aliyuncs.com/lmsystem/111111.jpg" alt="史努比" /></h2>
+<h2><a href="http://www.baidu.com" title="百度地址">百度</a></h2>
+<p>根据<a href="http://google.com/" title="google">谷歌</a>调查</p>
+<p>这是新浪的主页 <a href="http://www.sina.com.cn">http://www.sina.com.cn</a> <br />
+在java中输出Hello world : <code>system.out.println(&quot;Hello World&quot;);</code></p>
+<hr />
+<pre><code>// jQuery的helloword
+$(function(){
+    alert(&quot;Hello World&quot;)
+})
+</code></pre>
+
+<hr />
+<p><code>// jQuery的helloword
+$(function(){
+	alert(&quot;Hello World&quot;)
+})</code></p>
+<hr />
+<p>姓名|语文成绩|数学成绩|总成绩
+ ---|:---|:---:|---:
+ 喜羊羊|100|120|220</p>
+<hr />
+<table>
+<tr>
+<th width=10%, bgcolor=yellow >参数</th>
+<th width=40%, bgcolor=yellow>详细解释</th>
+<th width="50%", bgcolor=yellow>备注</th>
+</tr>
+<tr>
+<td bgcolor=#eeeeee> -l </td>
+<td> use a long listing format  </td>
+<td> 以长列表方式显示（显示出文件/文件夹详细信息）  </td>
+</tr>
+<tr>
+<td bgcolor=#00FF00>-t </td>
+<td> sort by modification time </td>
+<td> 按照修改时间排序（默认最近被修改的文件/文件夹排在最前面） </td>
+<tr>
+<td bgcolor=rgb(0,10,0)>-r </td>
+<td> reverse order while sorting </td>
+<td>  逆序排列 </td>
+</tr>
+</table>
