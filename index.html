@@ -1,11 +1,15 @@
+<!DOCTYPE html>
+<html>
 <style>
- #preview-box {
-     background-color: rgba(1,1,1,0.1);
-     padding: 1px 10px;
-     border-radius: 10px;
- }
+    #preview-box {
+        background-color: rgba(1,1,1,0.1);
+        padding: 1px 10px;
+        border-radius: 10px;
+    }
 </style>
-	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta charset="utf-8">
 <link id="linkstyle" rel='stylesheet' href='markdown.css'/>
 <div id="preview-box">
     <strong>Preview another...</strong>
@@ -25,6 +29,7 @@
         <option value="markdown11.css"   >markdown11</option>
         <option value="markdown12.css"   >markdown12</option>
         <option value="markdown13.css"   >markdown13</option>
+        <option value="markdown14.css"   >markdown14</option>
         <option value="avenir-white.css" >avenir-white</option>
         <option value="foghorn.css"      >foghorn</option>
         <option value="screen.css"       >screen</option>
@@ -32,12 +37,12 @@
     </select>
 </div>
 <script>
- var linkstyle = document.getElementById('linkstyle');
- var themes = document.getElementById('themes');
+    var linkstyle = document.getElementById('linkstyle');
+    var themes = document.getElementById('themes');
 
- themes.onchange = function(e) {
-     linkstyle.href = themes.value;
- };
+    themes.onchange = function(e) {
+        linkstyle.href = themes.value;
+    };
 </script>
 
 <p>[TOC]</p>
@@ -236,16 +241,17 @@ $(function(){
     alert(&quot;Hello World&quot;)
 })
 </code></pre>
-
+<div class="stackedit__html"><p><img src="https://img-blog.csdnimg.cn/20190510172524491.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2NrNDU3ODk3NTY0,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p>
+</div>
 <hr />
 <p><code>// jQuery的helloword
 $(function(){
-	alert(&quot;Hello World&quot;)
+    alert(&quot;Hello World&quot;)
 })</code></p>
 <hr />
 <p>姓名|语文成绩|数学成绩|总成绩
- ---|:---|:---:|---:
- 喜羊羊|100|120|220</p>
+    ---|:---|:---:|---:
+    喜羊羊|100|120|220</p>
 <hr />
 <table>
 <tr>
@@ -268,3 +274,4 @@ $(function(){
 <td>  逆序排列 </td>
 </tr>
 </table>
+</html>
